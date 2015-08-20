@@ -47,6 +47,10 @@ class Stopword extends DefaultEvents
     protected $stopword;
     protected $lang;
 
+    public function __construct($lang = '')
+    {
+        $this->lang = $lang;
+    }
 
     public function normalize_keywords(Array $keywords)
     {
@@ -108,15 +112,17 @@ class Stopword extends DefaultEvents
     {
         $detect    = $this->getClassifier();
         $stopwords = $this->getStopwords();
-        $lang = $detect->detect($text);
-        if (!is_string($lang)) {
+        if (empty($this->lang)) {
+            $this->lang = $detect->detect($text);
+        }
+
+        if (!is_string($this->lang)) {
             throw new \RuntimeException("Cannot detect the language of the text");
         }
-        if (empty($stopwords[$lang])) {
-            throw new \RuntimeException("We dont have an stop word for {$lang}, please add it in " . __DIR__ . "/Stopword/{$lang}-stopwords.txt and run generate.php");
+        if (empty($stopwords[$this->lang])) {
+            throw new \RuntimeException("We dont have an stop word for {$this->lang}, please add it in " . __DIR__ . "/Stopword/{$this->lang}-stopwords.txt and run generate.php");
         }
-        $this->stopword = $stopwords[$lang];
-        $this->lang     = $lang;
+        $this->stopword = $stopwords[$this->lang];
 
         return parent::get_words($text);
     }
