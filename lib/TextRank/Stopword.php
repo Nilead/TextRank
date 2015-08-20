@@ -47,6 +47,7 @@ class Stopword extends DefaultEvents
     protected $stopword;
     protected $lang;
 
+
     public function normalize_keywords(Array $keywords)
     {
         $normalized = parent::normalize_keywords($keywords);
@@ -78,6 +79,13 @@ class Stopword extends DefaultEvents
         return $keywords;
     }
 
+    public function setClassifier(Detect $classifier)
+    {
+        static $detect;
+
+        $detect = $classifier;
+    }
+
     protected function getClassifier()
     {
         static $detect;
@@ -86,6 +94,7 @@ class Stopword extends DefaultEvents
         }
         return $detect;
     }
+
     protected function getStopwords()
     {
         static $stopwords;
@@ -98,7 +107,7 @@ class Stopword extends DefaultEvents
     public function get_words($text)
     {
         $detect    = $this->getClassifier();
-        $stopwords = $this->getStopwords(); 
+        $stopwords = $this->getStopwords();
         $lang = $detect->detect($text);
         if (!is_string($lang)) {
             throw new \RuntimeException("Cannot detect the language of the text");
